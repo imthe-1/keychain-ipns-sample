@@ -16,7 +16,8 @@ ctrl.connect().then(async (res) => {
   // Publishing using default 'self' key
   const publishResp = await ctrl.coreClient.name.publish(`/ipfs/${CID[0].path}`)
   console.log('[Keychain] publishResp', publishResp);
-  const resolvedIPNSII = await ctrl.resolveIPNS(ipnsLink);
+  const resolvedIPNS = await ctrl.resolveIPNS(`/ipns/${publishResp.name}`);
+  console.log('[Keychain] resolvedIPNS', resolvedIPNS);
 
   // Publishing using the Keychain toolset modificaion
   const keypair = `keypair-${Date.now()}`;
@@ -30,6 +31,8 @@ ctrl.connect().then(async (res) => {
     IPNSKey.id,
   );
   console.log('[Keychain IPNS Publish]', ipnsLink);
+  const resolvedIPNSII = await ctrl.resolveIPNS(`/ipns/${ipnsLink.name}`);
+  console.log('[Keychain] resolvedIPNSII', resolvedIPNSII);
 });
 
 function App() {
