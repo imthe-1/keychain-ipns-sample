@@ -13,26 +13,39 @@ ctrl.connect().then(async (res) => {
   console.log('[Keychain] doc', doc);
   const CID = await ctrl.sendJSONToIPFS([doc]);
   console.log('[Keychain] CID', CID);
-  // Publishing using default 'self' key
-  const publishResp = await ctrl.coreClient.name.publish(`/ipfs/${CID[0].path}`)
-  console.log('[Keychain] publishResp', publishResp);
-  const resolvedIPNS = await ctrl.resolveIPNS(`/ipns/${publishResp.name}`);
-  console.log('[Keychain] resolvedIPNS', resolvedIPNS);
 
   // Publishing using the Keychain toolset modificaion
   const keypair = `keypair-${Date.now()}`;
-  const IPNSPrivateKey = 'b04ae926d8d76e94c446049959376a64a7e5acb3c33a26e76aeb1d6bbc9fc67e';
+  const IPNSPrivateKey = 'd7ee8c9b306fd2761cad8a0385b41efa96c131ad67adc9327f928a29f57205fd';
   const IPNSKey = await ctrl.deriveIPNSKeypair(keypair, IPNSPrivateKey);
   console.log('[IPNSKey]', IPNSKey); // deterministic
   const ipfsAddr = `/ipfs/${CID[0].path}`;
-  const ipnsLink = await ctrl.linkToIPNS(
-    ipfsAddr,
-    keypair,
-    IPNSKey.id,
-  );
-  console.log('[Keychain IPNS Publish]', ipnsLink);
-  const resolvedIPNSII = await ctrl.resolveIPNS(`/ipns/${ipnsLink.name}`);
-  console.log('[Keychain] resolvedIPNSII', resolvedIPNSII);
+  try {
+    // by default the lifetime is set to "3day". it can be modified by passing a 4th arg opts { lifetime: '2min' } to "linkToIPNS"
+    const ipnsLink = await ctrl.linkToIPNS(
+      ipfsAddr,
+      keypair,
+      IPNSKey.id,
+      // { lifetime: '2min' }
+    );
+    console.log('[Keychain IPNS Publish]', ipnsLink);
+    const resolvedIPNS = await ctrl.resolveIPNS(`/ipns/${ipnsLink.name}`);
+    console.log('[Keychain] resolvedIPNS', resolvedIPNS);
+  } catch (e) {
+    console.log('[EXPECTED_ERROR] in block #1 since subs happens first time', e)
+  }
+  try {
+    const ipnsLinkII = await ctrl.linkToIPNS(
+      ipfsAddr,
+      keypair,
+      IPNSKey.id,
+    );
+    console.log('[Keychain IPNS Publish]', ipnsLinkII);
+    const resolvedIPNSII = await ctrl.resolveIPNS(`/ipns/${ipnsLinkII.name}`);
+    console.log('[Keychain] resolvedIPNSII', resolvedIPNSII);
+  } catch (e) {
+    console.log('[UNEXPECTED_ERROR] in block #2', e)
+  }
 });
 
 function App() {
