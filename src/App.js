@@ -33,7 +33,7 @@ ctrl.connect().then(async (res) => {
   // Publishing using the Keychain toolset modificaion
   const keypair = `keypair-${Date.now()}`;
   // k1 private key hex. please plug in a new private key for experimentation.
-  const IPNSPrivateKey = 'dcdc545e91f559b4f070fc9048b094dbf45d4f47a8821e13f41649e2aa1a5d0d';
+  const IPNSPrivateKey = '931eb2d4ddcc62a0dec22a8cacb1a586bba477a2ca521b83d7f9d3f5510d1ec3';
   const IPNSKey = await ctrl.deriveIPNSKeypair(keypair, IPNSPrivateKey);
   // deterministic IPNS keypair generation. for the same private key, same IPNS name(pub key hash) gets generated.
   console.log('[IPNSKey]', IPNSKey);
